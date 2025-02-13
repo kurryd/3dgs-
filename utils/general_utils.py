@@ -75,6 +75,7 @@ def strip_lowerdiag(L):
 def strip_symmetric(sym):
     return strip_lowerdiag(sym)
 
+# 4元数 求旋转矩阵
 def build_rotation(r):
     norm = torch.sqrt(r[:,0]*r[:,0] + r[:,1]*r[:,1] + r[:,2]*r[:,2] + r[:,3]*r[:,3])
 
@@ -98,14 +99,20 @@ def build_rotation(r):
     R[:, 2, 2] = 1 - 2 * (x*x + y*y)
     return R
 
+# 参数：
+#  s: 缩放比例 s.shape = [n,3] = n个[sx,sy,sz] 
+#  r: 构建旋转矩阵4元数 r.shape = [n,4]
+# 得到变化矩阵
 def build_scaling_rotation(s, r):
+    # L 形状： [n,3,3]
     L = torch.zeros((s.shape[0], 3, 3), dtype=torch.float, device="cuda")
+    # R 形状： [n,3,3]
     R = build_rotation(r)
 
     L[:,0,0] = s[:,0]
     L[:,1,1] = s[:,1]
     L[:,2,2] = s[:,2]
-
+    # L 变换矩阵
     L = R @ L
     return L
 
